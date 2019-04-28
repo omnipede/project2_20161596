@@ -23,7 +23,7 @@ static int yylex(void);
 char* stack[100];
 int stack_top = -1;
 void stack_push (char* name) {
-	if (stack_top >= 100)
+	if (stack_top >= 99)
 		return;
 	else
 		stack[++stack_top] = name;
