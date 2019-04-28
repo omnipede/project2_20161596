@@ -149,6 +149,44 @@ TreeNode* newExpNode (ExpKind kind) {
 	return t;
 }
 
+TreeNode* newDeclNode (DeclKind kind) {
+
+	TreeNode* t = (TreeNode*)malloc(sizeof(TreeNode));
+	int i;
+	if (t==NULL)
+		fprintf(listing, "Out of memory error at line %d\n", lineno);
+	else {
+		for (i = 0; i < MAXCHILDREN; i++)
+			t->child[i] = NULL;
+		t->sibling = NULL;
+		t->nodekind = DeclK;
+		t->kind.decl = kind;
+		t->lineno = lineno;
+		t->type = Void;
+	}
+	return t;
+}
+
+TreeNode* newTypeNode (TypeKind kind) {
+
+	TreeNode* t = (TreeNode*)malloc(sizeof(TreeNode));
+	int i;
+	if (t==NULL)
+		fprintf(listing, "Out of memory error at line %d\n", lineno);
+	else {
+		for (i = 0; i < MAXCHILDREN; i++)
+			t->child[i] = NULL;
+		t->sibling = NULL;
+		t->nodekind = TypeK;
+		t->kind.type = kind;
+		t->lineno = lineno;
+	}
+	return t;
+}
+
+
+
+
 /*
  *	Function copyString allocates and maeks a new copy
  *	of an existing string.
@@ -199,17 +237,11 @@ void printTree (TreeNode* tree){
 				case IfK:
 					fprintf(listing, "If\n");
 					break;
-				case RepeatK:
-					fprintf(listing, "Repeat\n");
+				case WhileK:
+					fprintf(listing, "While\n");
 					break;
-				case AssignK:
-					fprintf(listing, "Assign to: %s\n", tree->attr.name);
-					break;
-				case ReadK:
-					fprintf(listing, "Read: %s\n", tree->attr.name);
-					break;
-				case WriteK:
-					fprintf(listing, "Write\n");
+				case ReturnK:
+					fprintf(listing, "Return\n");
 					break;
 				default:
 					fprintf(listing, "Unknown ExpNode kind\n");
@@ -230,6 +262,35 @@ void printTree (TreeNode* tree){
 					break;
 				default:
 					fprintf(listing, "Unknown ExpNode kind\n");
+					break;
+			}
+		}
+		else if (tree->nodekind == DeclK) {
+			switch(tree->kind.decl) {
+				case VarK:
+					if(tree->len == -1)
+						fprintf(listing, "Variable id: %s\n", tree->attr.name);	
+					else
+						fprintf(listing, "Array id: %s size: %d\n", tree->attr.name, tree->len);
+					break;
+				case FunK:
+
+					break;
+				default:
+					fprintf(listing, "Unknown DeclNode kind\n");
+					break;
+			}
+		}
+		else if (tree->nodekind == TypeK) {
+			switch(tree->kind.type) {
+				case VoidK:
+					fprintf(listing, "Type: void\n");
+					break;
+				case IntK:
+					fprintf(listing, "Type: int\n");
+					break;
+				default:
+					fprintf(listing, "Unknown TypeNode kind\n");
 					break;
 			}
 		}

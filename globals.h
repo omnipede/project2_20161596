@@ -8,7 +8,7 @@
 
 
 #ifndef YYPARSER
-#include "y.tab.h"
+#include "cm.tab.h"
 #define ENDFILE 0
 #endif
 
@@ -21,16 +21,6 @@
 #endif
 #define MAXRESERVED 8
 
-/*
-typedef enum {
-	ENDFILE, ERROR,
-	ELSE, IF, INT, RETURN, VOID, WHILE,
-	ID, NUM,
-	PLUS, MINUS, TIMES, OVER, LT, LE, GT, GE, EQ, NE, ASSIGN, SEMI, COMMA, 
-		LPAREN, RPAREN, LSQUARE, RSQUARE, LCURLY, RCURLY,
-	ERROR_IN_COMMENT
-} TokenType;
-*/
 typedef int TokenType;
 
 extern FILE* source;
@@ -40,10 +30,12 @@ extern FILE* code;
 extern int lineno;
 
 /* Syntax tree for parsing. */
-typedef enum {StmtK, ExpK} NodeKind;
-typedef enum {IfK, RepeatK, AssignK, ReadK, WriteK} StmtKind;
+typedef enum {StmtK, ExpK, DeclK, TypeK} NodeKind;
+typedef enum {IfK, WhileK, ReturnK} StmtKind;
 typedef enum {OpK, ConstK, IdK} ExpKind;
-typedef enum {Void, Integer, Boolean} ExpType;
+typedef enum {Void, Integer} ExpType;
+typedef enum {VarK, FunK} DeclKind;
+typedef enum {VoidK, IntK} TypeKind;
 
 #define MAXCHILDREN 3
 
@@ -52,13 +44,20 @@ typedef struct treeNode {
 	struct treeNode* sibling;
 	int lineno;
 	NodeKind nodekind;
-	union { StmtKind stmt; ExpKind exp; } kind;
+	union { 
+		StmtKind stmt; 
+		ExpKind exp; 
+		DeclKind decl;
+		TypeKind type;
+	}kind;
+
 	union { 
 		TokenType op;
 		int val;
 		char* name; 
 	} attr;
 	ExpType type;
+	int len;
 } TreeNode;
 
 extern int EchoSource;

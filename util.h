@@ -19,6 +19,18 @@ TreeNode* newStmtNode (StmtKind);
  */
 TreeNode* newExpNode (ExpKind);
 
+/*
+ * Creates a new declaration node
+ * for syntax tree construction.
+ */
+TreeNode* newDeclNode (DeclKind);
+
+/*
+ * Creates a new type node
+ * for syntax tree construction.
+ */
+TreeNode* newTypeNode (TypeKind);
+
 /* 
  *	Allocates and makes a new copy of
  *	an existing string.

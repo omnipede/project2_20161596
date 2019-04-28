@@ -4,7 +4,6 @@
 	#include "scan.h"
 	#define YY_NO_UNPUT
 	char tokenString[MAXTOKENLEN+1];
-
 %}
 
 digit		[0-9]

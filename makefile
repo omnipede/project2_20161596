@@ -1,4 +1,4 @@
-OBJECTS= main.o util.o lex.yy.o y.tab.o
+OBJECTS= main.o util.o lex.yy.o cm.tab.o
 CC = gcc
 CFLAGS = -Wall -c
 TARGET = 20161596
@@ -6,7 +6,7 @@ TARGET = 20161596
 $(TARGET): $(OBJECTS)
 	$(CC) -o $(TARGET) $(OBJECTS)
 
-main.o: y.tab.h globals.h util.h scan.h parse.h main.c 
+main.o: cm.tab.h globals.h util.h scan.h parse.h main.c 
 	$(CC) $(CFLAGS) main.c
 
 util.o: globals.h util.h util.c
@@ -15,14 +15,14 @@ util.o: globals.h util.h util.c
 lex.yy.o: globals.h util.h scan.h lex.yy.c
 	$(CC) $(CFLAGS) lex.yy.c
 
-y.tab.o: globals.h util.h scan.h parse.h y.tab.c
-	$(CC) $(CFLAGS) y.tab.c
+cm.tab.o: globals.h util.h scan.h parse.h cm.tab.c
+	$(CC) $(CFLAGS) cm.tab.c
 
 lex.yy.c: tiny.l
 	flex tiny.l
 
-y.tab.c y.tab.h: cm.y
-	yacc -d cm.y
+cm.tab.c cm.tab.h: cm.y
+	bison -dv cm.y 
 
 clean:
-	rm -rf *.o $(TARGET) $(OBJECTS) lex.yy.c y.tab.c y.tab.h
+	rm -rf *.o $(TARGET) lex.yy.c cm.tab.c cm.tab.h

@@ -13,79 +13,108 @@
 #define YYSTYPE TreeNode*
 static char* savedName;
 static int savedLineno;
+static int savedType;
+static int savedNum;
 static TreeNode* savedTree;
 
 int yyerror(char*);
-static int yylex();
+static int yylex(void);
 %}
 
-%token ERROR
 %token ELSE IF INT RETURN VOID WHILE
-%token ID NUM
 %token PLUS MINUS TIMES OVER 
-%token LT LE GT GE EQ NE
-%token ASSIGN SEMI COMMA LPAREN RPAREN LSQUARE RSQUARE LCURLY RCURLY
+%token LT LE GT GE EQ NE ASSIGN
+%token SEMI COMMA LPAREN RPAREN LSQUARE RSQUARE LCURLY RCURLY
+%token ID NUM
 %token ERROR_IN_COMMENT
+%token ERROR
 
 %%
 
-/* 1 */
 program: declaration_list
+			{ savedTree = $1; }
 	   ;
 
-/* 2 */
 declaration_list: declaration_list declaration 
-				| declaration
+					{
+					  YYSTYPE t = $1;
+					  if (t){
+						for(; t->sibling != NULL; t = t->sibling)
+							;
+						t->sibling = $2;
+						$$ = $1;
+					  }
+					  else
+						  $$ = $2;
+				  	}
+				| declaration 
+					{ $$ = $1;}
 				;
 
-/* 3 */
-declaration: var_declaration
+declaration: var_declaration 
+				{ $$ = $1;}
 		   | fun_declaration
+			    { $$ = $1;}		
 		   ;
 
-/* 4 */
-var_declaration: type_specifier ID SEMI
-			   | type_specifier ID LSQUARE NUM RSQUARE SEMI
+id: ID { savedName = copyString(tokenString); } ;
+num: NUM { savedNum = atoi(tokenString); } ;
+
+var_declaration: type_specifier id SEMI 
+				{
+					$$ = newDeclNode(VarK);
+					$$->attr.name = savedName;
+					$$->len = -1;
+
+					$$->child[0] = $1;
+				}		
+			   | type_specifier id LSQUARE num RSQUARE SEMI
+			    {
+					$$ = newDeclNode(VarK);
+					$$->attr.name = savedName;
+					$$->len = savedNum;
+
+					$$->child[0] = $1;
+				}
 			   ;
 
-/* 5 */
-type_specifier: INT
+type_specifier: INT 
+				{ $$ = newTypeNode(IntK);}
 			  | VOID
+			  	{ $$ = newTypeNode(VoidK);}
 			  ;
-/* 6 */
-fun_declaration: type_specifier ID LPAREN params RPAREN compound_stmt
+
+fun_declaration: type_specifier id LPAREN params RPAREN compound_stmt
+				{
+					$$ = newDeclNode(FunK);
+					$$->attr.name = savedName;
+				}
 			   ;
 
-/* 7 */
-params: param_list 
+params: param_list
+		{ $$ = $1; }
       | VOID
 	  ;
 
-/* 8 */
 param_list: param_list COMMA param 
           | param
 		  ;
 
-/* 9 */
 param: type_specifier ID
      | type_specifier ID LSQUARE RSQUARE
 	 ;
 
-/* 10 */
 compound_stmt: LCURLY local_declarations statement_list RCURLY
 			 ;
 
-/* 11 */
 local_declarations: local_declarations var_declaration
 				  | 
 				  ;
 
-/* 12 */
 statement_list: statement_list statement
 			  |
 			  ;
 
-/* 13 */
 statement: expression_stmt
 		 | compound_stmt
 		 | selection_stmt
@@ -93,60 +122,47 @@ statement: expression_stmt
 		 | return_stmt
 		 ;
 
-/* 14 */
 expression_stmt: expression SEMI
 			   | SEMI
 			   ;
 
-/* 15 */
 selection_stmt: IF LPAREN expression RPAREN statement
 			  | IF LPAREN expression RPAREN ELSE statement
 			  ;
 
-/* 16 */
 iteration_stmt: WHILE LPAREN expression RPAREN statement
 			  ;
 
-/* 17 */
 return_stmt: RETURN SEMI 
 		   | RETURN expression SEMI
 		   ;
 
-/* 18 */
 expression: var ASSIGN expression 
 		  | simple_expression
 		  ;
 
-/* 19 */
 var: ID
    | ID LSQUARE expression RSQUARE
    ;
 
-/* 20 */
 simple_expression: additive_expression relop additive_expression
 				 | additive_expression
 				 ;
 
-/* 21 */
 relop: LE | LT | GT | GE | EQ | NE ;
 
-/* 22 */
 additive_expression: additive_expression addop term 
 				   | term
 				   ;
 
-/* 23 */
 addop: PLUS | MINUS ;
 
-/* 24 */
 term: term mulop factor 
 	| factor
 	;
 
-/* 25 */
 mulop: TIMES | OVER ;
 
-/* 26 */
 factor: LPAREN expression RPAREN
 	  | var
 	  | call
@@ -168,12 +184,14 @@ arg_list: arg_list COMMA expression
 
 int yyerror(char* msg) {
 
+	printf("error at line %d: %s\n", lineno, msg);
 	return 0;
 }
 
 static int yylex(void) {
 
-	return getToken();
+	TokenType t = getToken();
+	return t;
 }
 
 TreeNode* parse(void) {

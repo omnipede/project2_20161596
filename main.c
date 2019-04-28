@@ -31,11 +31,11 @@ FILE* source;
 FILE* listing;
 FILE* code;
 
-int EchoSource = TRUE;
-int TraceScan = FALSE;
-int TraceParse = FALSE;
-int TraceAnalyze = TRUE;
-int TraceCode = TRUE;
+int EchoSource = FALSE;
+int TraceScan = TRUE;
+int TraceParse = TRUE;
+int TraceAnalyze = FALSE;
+int TraceCode = FALSE;
 
 int Error = FALSE;
 

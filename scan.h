@@ -5,5 +5,4 @@
 extern char tokenString[MAXTOKENLEN+1];
 TokenType getToken(void);
 
-
 #endif
