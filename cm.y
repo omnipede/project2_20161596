@@ -21,7 +21,7 @@ static TreeNode* savedTree;
 %token ID NUM
 %token PLUS MINUS TIMES OVER 
 %token LT LE GT GE EQ NE
-%token ASSIGN SEMI COMMA LPAREN RPAREN LSQUARE RSQUARE LCURLY RCURLy
+%token ASSIGN SEMI COMMA LPAREN RPAREN LSQUARE RSQUARE LCURLY RCURLY
 %token ERROR_IN_COMMENT
 
 %%
@@ -44,6 +44,17 @@ type_specifier: INT
 			  | VOID
 			  ;
 
+fun_declaration: type_specifier ID LCURLY params RCURLY compund_stmt
+			   ;
+params: param_list 
+      | VOID
+	  ;
+param_list: param_list COMMA param 
+          | param
+		  ;
+param: type_specifier ID
+     | type_specifier ID LSQUARE RSQUARE
+	 ;
 
 %%
 
