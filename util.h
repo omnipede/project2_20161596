@@ -5,7 +5,7 @@
  *	Prints a token and its lexeme ot the 
  *	listing file.
  */
-void printToken( TokenType, const char*);
+void printToken(TokenType, const char*);
 
 /*
  *	Creates a new statement node ofr syntax tree 

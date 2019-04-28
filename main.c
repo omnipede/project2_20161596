@@ -5,7 +5,7 @@
 
 #include "globals.h"
 
-#define NO_PARSE TRUE
+#define NO_PARSE FALSE
 #define NO_ANALYZE TRUE
 #define NO_CODE TRUE
 
@@ -32,14 +32,15 @@ FILE* listing;
 FILE* code;
 
 int EchoSource = TRUE;
-int TraceScan = TRUE;
-int TraceParse = TRUE;
+int TraceScan = FALSE;
+int TraceParse = FALSE;
 int TraceAnalyze = TRUE;
 int TraceCode = TRUE;
 
 int Error = FALSE;
 
 int main (int argc, char* argv[]) {
+	TreeNode* syntaxTree;
 	char pgm[120]; /* file name. */
 	if (argc != 2) {
 		fprintf(stderr, "usage: %s <filename>\n", argv[0]);
@@ -55,7 +56,6 @@ int main (int argc, char* argv[]) {
 		exit(1);
 	}
 	listing = stdout;
-	//fprintf(listing, "\nTINY COMPILATION: %s\n", pgm);
 #if NO_PARSE
 	fprintf(listing, "   line number\t\t token\t\tlexeme\n");
 	fprintf(listing, "-------------------------------------------------\n");
@@ -66,6 +66,7 @@ int main (int argc, char* argv[]) {
 		fprintf(listing, "\nSyntax tree: \n");
 		printTree(syntaxTree);
 	}
+
 #if !NO_ANALYZE
 	if (! Error) {
 		if (TraceAnalyze) fprintf(listing, "\nBuilding Synbol Table ...\n");
@@ -74,6 +75,7 @@ int main (int argc, char* argv[]) {
 		typeCheck(syntaxTree);
 		if (TraceAnalyze) fprintf(listing, "\nType Checking Finished\n");
 	}
+
 #if !NO_CODE
 	if (! Error) {
 		char* codefile;

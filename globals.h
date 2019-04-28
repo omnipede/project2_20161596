@@ -6,12 +6,12 @@
 #include <ctype.h>
 #include <string.h>
 
-/*
+
 #ifndef YYPARSER
 #include "y.tab.h"
 #define ENDFILE 0
 #endif
-*/
+
 #ifndef FALSE
 #define FALSE 0
 #endif 
@@ -21,6 +21,7 @@
 #endif
 #define MAXRESERVED 8
 
+/*
 typedef enum {
 	ENDFILE, ERROR,
 	ELSE, IF, INT, RETURN, VOID, WHILE,
@@ -29,6 +30,8 @@ typedef enum {
 		LPAREN, RPAREN, LSQUARE, RSQUARE, LCURLY, RCURLY,
 	ERROR_IN_COMMENT
 } TokenType;
+*/
+typedef int TokenType;
 
 extern FILE* source;
 extern FILE* listing;

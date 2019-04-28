@@ -14,9 +14,12 @@
 static char* savedName;
 static int savedLineno;
 static TreeNode* savedTree;
+
+int yyerror(char*);
+static int yylex();
 %}
 
-%token ENDFILE ERROR
+%token ERROR
 %token ELSE IF INT RETURN VOID WHILE
 %token ID NUM
 %token PLUS MINUS TIMES OVER 
