@@ -1,2 +1,5 @@
 20161596
 *.o
+*.swp
+y.tab.c
+y.tab.h

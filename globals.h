@@ -6,6 +6,12 @@
 #include <ctype.h>
 #include <string.h>
 
+/*
+#ifndef YYPARSER
+#include "y.tab.h"
+#define ENDFILE 0
+#endif
+*/
 #ifndef FALSE
 #define FALSE 0
 #endif 
@@ -34,7 +40,6 @@ extern int lineno;
 typedef enum {StmtK, ExpK} NodeKind;
 typedef enum {IfK, RepeatK, AssignK, ReadK, WriteK} StmtKind;
 typedef enum {OpK, ConstK, IdK} ExpKind;
-
 typedef enum {Void, Integer, Boolean} ExpType;
 
 #define MAXCHILDREN 3
