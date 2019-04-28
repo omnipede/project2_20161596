@@ -19,6 +19,24 @@ static TreeNode* savedTree;
 
 int yyerror(char*);
 static int yylex(void);
+
+char* stack[100];
+int stack_top = -1;
+void stack_push (char* name) {
+	if (stack_top >= 100)
+		return;
+	else
+		stack[++stack_top] = name;
+	return;
+}
+
+char* stack_pop (void) {
+	if (stack_top < 0)
+		return NULL;
+	else
+		return stack[stack_top--];
+}
+
 %}
 
 %token ELSE IF INT RETURN VOID WHILE
@@ -57,13 +75,13 @@ declaration: var_declaration
 			    { $$ = $1;}		
 		   ;
 
-id: ID { savedName = copyString(tokenString); } ;
+id: ID { savedName = copyString(tokenString); stack_push(savedName);} ;
 num: NUM { savedNum = atoi(tokenString); } ;
 
 var_declaration: type_specifier id SEMI 
 				{
 					$$ = newDeclNode(VarK);
-					$$->attr.name = savedName;
+					$$->attr.name = stack_pop();
 					$$->len = -1;
 
 					$$->child[0] = $1;
@@ -71,7 +89,7 @@ var_declaration: type_specifier id SEMI
 			   | type_specifier id LSQUARE num RSQUARE SEMI
 			    {
 					$$ = newDeclNode(VarK);
-					$$->attr.name = savedName;
+					$$->attr.name = stack_pop();
 					$$->len = savedNum;
 
 					$$->child[0] = $1;
@@ -85,16 +103,13 @@ type_specifier: INT
 			  ;
 
 fun_declaration: type_specifier id 
-				{
-					$$ = newDeclNode(FunK);
-					$$->attr.name = savedName;
-				} 
 				 LPAREN params RPAREN compound_stmt
 				{
-					$$ = $3;
+					$$ = newDeclNode(FunK);
+					$$->attr.name = stack_pop();
 					$$->child[0] = $1;
-					$$->child[1] = $5;
-					$$->child[2] = $7;
+					$$->child[1] = $4;
+					$$->child[2] = $6; 
 				}
 			   ;
 
@@ -104,26 +119,62 @@ params: param_list
 	  	{ $$ = newTypeNode(VoidK); }
 	  ;
 
-param_list: param_list COMMA param 
+param_list: param_list COMMA param
+			{
+				YYSTYPE t = $1;
+				if (t) {
+					for (; t->sibling; t = t->sibling)
+						;
+					t->sibling = $3;
+					$$ = $1;
+				}
+				else
+					$$ = $3;
+			}
           | param
+		  	{ $$ = $1; }
 		  ;
 
-param: type_specifier ID
-     | type_specifier ID LSQUARE RSQUARE
+param: type_specifier id
+		{
+			$$ = newExpNode(IdK);
+			$$->attr.name = stack_pop();
+			$$->child[0] = $1;
+		}
+     | type_specifier id LSQUARE RSQUARE
+		{
+			$$ = newExpNode(IdK);
+			$$->attr.name = stack_pop();
+			$$->child[0] = $1;
+		}
 	 ;
 
 compound_stmt: LCURLY local_declarations statement_list RCURLY
 				{
-					$$ = NULL;
+					$$ = newStmtNode(CompoundK);
+					$$->child[0] = $2;
+					$$->child[1] = $3;
 				}
 			 ;
 
 local_declarations: local_declarations var_declaration
-				  | 
+					{
+						YYSTYPE t = $1;
+						if (t) {
+							for (; t->sibling; t = t->sibling)
+								;
+							t->sibling = $2;
+							$$ = $1;
+						}
+						else
+							$$ = $2;
+					}
+				  | { $$ = NULL; } 
 				  ;
 
 statement_list: statement_list statement
-			  |
+				{ $$ = NULL; }
+			  | { $$ = NULL; }
 			  ;
 
 statement: expression_stmt

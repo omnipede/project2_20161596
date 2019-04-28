@@ -243,6 +243,9 @@ void printTree (TreeNode* tree){
 				case ReturnK:
 					fprintf(listing, "Return\n");
 					break;
+				case CompoundK:
+					fprintf(listing, "Compound\n");
+					break;
 				default:
 					fprintf(listing, "Unknown ExpNode kind\n");
 					break;

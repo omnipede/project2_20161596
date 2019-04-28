@@ -31,7 +31,7 @@ extern int lineno;
 
 /* Syntax tree for parsing. */
 typedef enum {StmtK, ExpK, DeclK, TypeK} NodeKind;
-typedef enum {IfK, WhileK, ReturnK} StmtKind;
+typedef enum {IfK, WhileK, ReturnK, CompoundK} StmtKind;
 typedef enum {OpK, ConstK, IdK} ExpKind;
 typedef enum {Void, Integer} ExpType;
 typedef enum {VarK, FunK} DeclKind;
