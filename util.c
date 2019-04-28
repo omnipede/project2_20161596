@@ -274,7 +274,7 @@ void printTree (TreeNode* tree){
 						fprintf(listing, "Array id: %s size: %d\n", tree->attr.name, tree->len);
 					break;
 				case FunK:
-
+					fprintf(listing, "Function id: %s\n", tree->attr.name);
 					break;
 				default:
 					fprintf(listing, "Unknown DeclNode kind\n");

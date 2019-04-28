@@ -84,16 +84,24 @@ type_specifier: INT
 			  	{ $$ = newTypeNode(VoidK);}
 			  ;
 
-fun_declaration: type_specifier id LPAREN params RPAREN compound_stmt
+fun_declaration: type_specifier id 
 				{
 					$$ = newDeclNode(FunK);
 					$$->attr.name = savedName;
+				} 
+				 LPAREN params RPAREN compound_stmt
+				{
+					$$ = $3;
+					$$->child[0] = $1;
+					$$->child[1] = $5;
+					$$->child[2] = $7;
 				}
 			   ;
 
 params: param_list
 		{ $$ = $1; }
       | VOID
+	  	{ $$ = newTypeNode(VoidK); }
 	  ;
 
 param_list: param_list COMMA param 
@@ -105,6 +113,9 @@ param: type_specifier ID
 	 ;
 
 compound_stmt: LCURLY local_declarations statement_list RCURLY
+				{
+					$$ = NULL;
+				}
 			 ;
 
 local_declarations: local_declarations var_declaration
