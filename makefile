@@ -19,4 +19,4 @@ lex.yy.c: tiny.l
 	flex tiny.l
 
 clean:
-	rm -rf *.o $(TARGET) $(OBJECTS) lex.yy.c
+	rm -rf *.o $(TARGET) $(OBJECTS) lex.yy.c y.tab.c y.tab.h
