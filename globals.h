@@ -32,9 +32,9 @@ extern int lineno;
 /* Syntax tree for parsing. */
 typedef enum {StmtK, ExpK, DeclK, TypeK} NodeKind;
 typedef enum {IfK, WhileK, ReturnK, CompoundK} StmtKind;
-typedef enum {OpK, ConstK, IdK} ExpKind;
+typedef enum {OpK, ConstK, IdK, CallK} ExpKind;
 typedef enum {Void, Integer} ExpType;
-typedef enum {VarK, FunK} DeclKind;
+typedef enum {VarK, FunK, ParamK} DeclKind;
 typedef enum {VoidK, IntK} TypeKind;
 
 #define MAXCHILDREN 3

@@ -75,31 +75,43 @@ declaration: var_declaration
 			    { $$ = $1;}		
 		   ;
 
-id: ID { savedName = copyString(tokenString); stack_push(savedName);} ;
-num: NUM { savedNum = atoi(tokenString); } ;
+id: ID 
+	{ 
+		savedName = copyString(tokenString); 
+		stack_push(savedName);
+	} 
+  ;
+num: NUM 
+	{ 
+		savedNum = atoi(tokenString); 
+	} 
+   ;
 
 var_declaration: type_specifier id SEMI 
 				{
-					$$ = newDeclNode(VarK);
+					$$ = newExpNode(IdK);
 					$$->attr.name = stack_pop();
-					$$->len = -1;
-
-					$$->child[0] = $1;
+					$$->sibling = $1;
 				}		
 			   | type_specifier id LSQUARE num RSQUARE SEMI
 			    {
-					$$ = newDeclNode(VarK);
+					$$ = newExpNode(IdK);
 					$$->attr.name = stack_pop();
-					$$->len = savedNum;
-
-					$$->child[0] = $1;
+					$$->sibling = $1;
+					$1->len = savedNum;
 				}
 			   ;
 
 type_specifier: INT 
-				{ $$ = newTypeNode(IntK);}
+				{ 
+					$$ = newTypeNode(IntK); 
+					$$->len = -1;
+				}
 			  | VOID
-			  	{ $$ = newTypeNode(VoidK);}
+			  	{ 
+					$$ = newTypeNode(VoidK);
+					$$->len = -1;
+				}
 			  ;
 
 fun_declaration: type_specifier id 
@@ -116,7 +128,10 @@ fun_declaration: type_specifier id
 params: param_list
 		{ $$ = $1; }
       | VOID
-	  	{ $$ = newTypeNode(VoidK); }
+	  	{ 
+			$$ = newDeclNode(ParamK);
+			$$->attr.name = NULL;
+		}
 	  ;
 
 param_list: param_list COMMA param
@@ -137,13 +152,13 @@ param_list: param_list COMMA param
 
 param: type_specifier id
 		{
-			$$ = newExpNode(IdK);
+			$$ = newDeclNode(ParamK);
 			$$->attr.name = stack_pop();
 			$$->child[0] = $1;
 		}
      | type_specifier id LSQUARE RSQUARE
 		{
-			$$ = newExpNode(IdK);
+			$$ = newDeclNode(ParamK);
 			$$->attr.name = stack_pop();
 			$$->child[0] = $1;
 		}
@@ -173,73 +188,181 @@ local_declarations: local_declarations var_declaration
 				  ;
 
 statement_list: statement_list statement
-				{ $$ = NULL; }
+				{ 
+					YYSTYPE t = $1;
+					if (t) {
+						for (; t->sibling; t = t->sibling)
+							;
+						t->sibling = $2;
+						$$ = $1;
+					}
+					else
+						$$ = $2;
+				}
 			  | { $$ = NULL; }
 			  ;
 
 statement: expression_stmt
+			{ $$ = $1; }
 		 | compound_stmt
+		 	{ $$ = $1; }
 		 | selection_stmt
+		 	{ $$ = $1; }
 		 | iteration_stmt
+		 	{ $$ = $1; }
 		 | return_stmt
+		 	{ $$ = $1; }
 		 ;
 
 expression_stmt: expression SEMI
+				{ $$ = $1; }
 			   | SEMI
+			   	{ $$ = NULL; }
 			   ;
 
 selection_stmt: IF LPAREN expression RPAREN statement
-			  | IF LPAREN expression RPAREN ELSE statement
+				{ 
+					$$ = newStmtNode(IfK);
+					$$->child[0] = $3;
+					$$->child[1] = $5;
+				}
+			  | IF LPAREN expression RPAREN statement ELSE statement
+			  	{
+					$$ = newStmtNode(IfK);
+					$$->child[0] = $3;
+					$$->child[1] = $5;
+					$$->child[2] = $7;
+				}
 			  ;
 
 iteration_stmt: WHILE LPAREN expression RPAREN statement
+				{
+					$$ = newStmtNode(WhileK);
+					$$->child[0] = $3;
+					$$->child[1] = $5;
+				}
 			  ;
 
 return_stmt: RETURN SEMI 
+			{
+				$$ = newStmtNode(ReturnK);
+			}
 		   | RETURN expression SEMI
+		   	{
+				$$ = newStmtNode(ReturnK);
+				$$->child[0] = $2;
+			}
 		   ;
 
 expression: var ASSIGN expression 
+			{
+				$$ = newExpNode(OpK);
+				$$->attr.op = ASSIGN;
+				$$->child[0] = $1;
+				$$->child[1] = $3;
+			}
 		  | simple_expression
+		  	{ $$ = $1; }
 		  ;
 
-var: ID
-   | ID LSQUARE expression RSQUARE
+var: id
+	{ 
+		$$ = newExpNode(IdK);
+		$$->attr.name = stack_pop();
+	}
+   | id LSQUARE expression RSQUARE
+    {
+		$$ = newExpNode(IdK);
+		$$->attr.name = stack_pop();
+		$$->child[0] = $3;
+	}
    ;
 
 simple_expression: additive_expression relop additive_expression
+					{
+						$$ = $2;
+						$$->child[0] = $1;
+						$$->child[1] = $3;
+					}
 				 | additive_expression
+				 	{
+						$$ = $1;
+					}
 				 ;
 
-relop: LE | LT | GT | GE | EQ | NE ;
+relop: LE { $$ = newExpNode(OpK); $$->attr.op = LE ;} 
+	 | LT { $$ = newExpNode(OpK); $$->attr.op = LT ;}
+	 | GT { $$ = newExpNode(OpK); $$->attr.op = GT ;}
+	 | GE { $$ = newExpNode(OpK); $$->attr.op = GE ;} 
+	 | EQ { $$ = newExpNode(OpK); $$->attr.op = EQ ;}
+	 | NE { $$ = newExpNode(OpK); $$->attr.op = NE ;}
+	 ;
 
 additive_expression: additive_expression addop term 
+					{
+						$$ = $2;
+						$$->child[0] = $1;
+						$$->child[1] = $3;
+					}
 				   | term
+				    { $$ = $1; }
 				   ;
 
-addop: PLUS | MINUS ;
+addop: PLUS  { $$ = newExpNode(OpK); $$->attr.op = PLUS; } 
+	 | MINUS { $$ = newExpNode(OpK); $$->attr.op = MINUS; }
+	 ;
 
 term: term mulop factor 
+	 {
+		 $$ = $2;
+		 $$->child[0] = $1;
+		 $$->child[1] = $3;
+	 }
 	| factor
+	 { $$ = $1;}
 	;
 
-mulop: TIMES | OVER ;
+mulop: TIMES { $$ = newExpNode(OpK); $$->attr.op = TIMES; } 
+	 | OVER  { $$ = newExpNode(OpK); $$->attr.op = OVER; } 
+	 ;
 
 factor: LPAREN expression RPAREN
+		{ $$ = $2;}
 	  | var
+	  	{ $$ = $1;}
 	  | call
+	  	{ $$ = $1;}
 	  | NUM
+	  	{ $$ = newExpNode(ConstK); $$->attr.val = atoi(tokenString); }
 	  ;
 
-call: ID LPAREN args RPAREN
+call: id LPAREN args RPAREN
+	 {
+		 $$ = newExpNode(CallK);
+		 $$->attr.name = stack_pop();
+		 $$->child[0] = $3;
+	 }
 	;
 
 args: arg_list 
-	|
+	  { $$ = $1; }
+	| { $$ = NULL; }
 	;
 
 arg_list: arg_list COMMA expression 
+		 {
+			 YYSTYPE t = $1;
+			 if (t) {
+				 for(; t->sibling; t = t->sibling)
+					 ;
+				 t->sibling = $3;
+				 $$ = $1;
+			 }
+			 else
+				 $$ = $3;
+		 }
 		| expression
+		 { $$ = $1; }
 		;
 
 %%
