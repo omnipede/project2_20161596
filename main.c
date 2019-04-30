@@ -32,7 +32,7 @@ FILE* listing;
 FILE* code;
 
 int EchoSource = FALSE;
-int TraceScan = TRUE;
+int TraceScan = FALSE;
 int TraceParse = TRUE;
 int TraceAnalyze = FALSE;
 int TraceCode = FALSE;

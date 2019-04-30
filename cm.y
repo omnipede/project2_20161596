@@ -13,7 +13,6 @@
 #define YYSTYPE TreeNode*
 static char* savedName;
 static int savedLineno;
-static int savedType;
 static int savedNum;
 static TreeNode* savedTree;
 
@@ -369,7 +368,10 @@ arg_list: arg_list COMMA expression
 
 int yyerror(char* msg) {
 
-	printf("error at line %d: %s\n", lineno, msg);
+	fprintf(listing, "Syntax error at line %d: %s\n", lineno, msg);
+	fprintf(listing, "Current token: ");
+	printToken(yychar, tokenString);
+	Error = TRUE;
 	return 0;
 }
 
