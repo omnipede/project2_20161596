@@ -51,6 +51,9 @@ char* stack_pop (void) {
 
 %nonassoc RPAREN
 %nonassoc ELSE
+
+%start program
+
 %%
 
 program: declaration_list
