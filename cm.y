@@ -46,6 +46,11 @@ char* stack_pop (void) {
 %token ERROR_IN_COMMENT
 %token ERROR
 
+%left PLUS MINUS
+%left TIMES OVER
+
+%nonassoc RPAREN
+%nonassoc ELSE
 %%
 
 program: declaration_list
