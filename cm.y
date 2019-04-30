@@ -97,6 +97,8 @@ var_declaration: type_specifier id SEMI
 					$$ = newExpNode(IdK);
 					$$->attr.name = stack_pop();
 					$$->sibling = $1;
+
+					$1->type = Array;
 					$1->len = savedNum;
 				}
 			   ;
@@ -104,12 +106,12 @@ var_declaration: type_specifier id SEMI
 type_specifier: INT 
 				{ 
 					$$ = newTypeNode(IntK); 
-					$$->len = -1;
+					$$->type = Integer;
 				}
 			  | VOID
 			  	{ 
 					$$ = newTypeNode(VoidK);
-					$$->len = -1;
+					$$->type = Void;
 				}
 			  ;
 

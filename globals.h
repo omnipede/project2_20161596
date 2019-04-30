@@ -33,7 +33,7 @@ extern int lineno;
 typedef enum {StmtK, ExpK, DeclK, TypeK} NodeKind;
 typedef enum {IfK, WhileK, ReturnK, CompoundK} StmtKind;
 typedef enum {OpK, ConstK, IdK, CallK} ExpKind;
-typedef enum {Void, Integer} ExpType;
+typedef enum {Void, Integer, Array} ExpType;
 typedef enum {VarK, FunK, ParamK} DeclKind;
 typedef enum {VoidK, IntK} TypeKind;
 
