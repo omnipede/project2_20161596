@@ -37,7 +37,7 @@ typedef enum {Void, Integer, Array} ExpType;
 typedef enum {VarK, FunK, ParamK} DeclKind;
 typedef enum {VoidK, IntK} TypeKind;
 
-#define MAXCHILDREN 3
+#define MAXCHILDREN 4
 
 typedef struct treeNode {
 	struct treeNode* child[MAXCHILDREN];

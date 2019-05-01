@@ -88,6 +88,9 @@ id: ID
 		savedName = copyString(tokenString); 
 		savedLineno = lineno;
 		stack_push(savedName);
+
+		$$ = newExpNode(IdK);
+		$$->attr.name = savedName;
 	} 
   ;
 num: NUM 
@@ -98,16 +101,15 @@ num: NUM
 
 var_declaration: type_specifier id SEMI 
 				{
-					$$ = newExpNode(IdK);
-					$$->attr.name = stack_pop();
-					$$->sibling = $1;
+					$$ = newDeclNode(VarK);
+					$$->child[0] = $1;
+					$$->child[1] = $2;
 				}		
 			   | type_specifier id LSQUARE num RSQUARE SEMI
 			    {
-					$$ = newExpNode(IdK);
-					$$->attr.name = stack_pop();
-					$$->sibling = $1;
-
+					$$ = newDeclNode(VarK);
+					$$->child[0] = $1;
+					$$->child[1] = $2;
 					$1->type = Array;
 					$1->len = savedNum;
 				}
@@ -125,14 +127,13 @@ type_specifier: INT
 				}
 			  ;
 
-fun_declaration: type_specifier id 
-				 LPAREN params RPAREN compound_stmt
+fun_declaration: type_specifier id LPAREN params RPAREN compound_stmt
 				{
 					$$ = newDeclNode(FunK);
-					$$->attr.name = stack_pop();
 					$$->child[0] = $1;
-					$$->child[1] = $4;
-					$$->child[2] = $6; 
+					$$->child[1] = $2;
+					$$->child[2] = $4;
+					$$->child[3] = $6;
 				}
 			   ;
 
@@ -164,14 +165,14 @@ param_list: param_list COMMA param
 param: type_specifier id
 		{
 			$$ = newDeclNode(ParamK);
-			$$->attr.name = stack_pop();
 			$$->child[0] = $1;
+			$$->child[1] = $2;
 		}
      | type_specifier id LSQUARE RSQUARE
 		{
 			$$ = newDeclNode(ParamK);
-			$$->attr.name = stack_pop();
 			$$->child[0] = $1;
+			$$->child[1] = $2;
 		}
 	 ;
 
@@ -278,13 +279,11 @@ expression: var ASSIGN expression
 
 var: id
 	{ 
-		$$ = newExpNode(IdK);
-		$$->attr.name = stack_pop();
+		$$ = $1;
 	}
    | id LSQUARE expression RSQUARE
     {
-		$$ = newExpNode(IdK);
-		$$->attr.name = stack_pop();
+		$$ = $1;
 		$$->child[0] = $3;
 	}
    ;
@@ -350,7 +349,7 @@ factor: LPAREN expression RPAREN
 call: id LPAREN args RPAREN
 	 {
 		 $$ = newExpNode(CallK);
-		 $$->attr.name = stack_pop();
+		 $$->attr.name = $1->attr.name
 		 $$->child[0] = $3;
 	 }
 	;

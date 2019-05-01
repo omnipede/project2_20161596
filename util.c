@@ -3,9 +3,6 @@
 
 void printToken(TokenType token, const char* tokenString) {
 	switch(token) {
-	/*
-	 *	Keywords.
-	 */
 	case ELSE:
 		fprintf(listing, "\tELSE\t\t%s\n", tokenString);
 		break;
@@ -24,9 +21,6 @@ void printToken(TokenType token, const char* tokenString) {
 	case WHILE:
 		fprintf(listing, "\tWHILE\t\t%s\n", tokenString);
 		break;
-	/*
-	 *	Special symbols.
-	 */
 	case PLUS:
 		fprintf(listing, "\t+\t\t%s\n", tokenString);
 		break;
@@ -84,9 +78,6 @@ void printToken(TokenType token, const char* tokenString) {
 	case RCURLY:
 		fprintf(listing, "\t}\t\t%s\n", tokenString);
 		break;
-	/*
-	 *	Other tokens.
-	 */
 	case ENDFILE:
 		fprintf(listing, "\tEOF\t\t\n");
 		break;
@@ -300,7 +291,7 @@ void printTree (TreeNode* tree){
 					fprintf(listing, "Function Declaration\n");
 					break;
 				case ParamK:
-					fprintf(listing, "Parameter = %s\n", tree->attr.name); 
+					fprintf(listing, "Parameter\n"); 
 					break;
 				default:
 					fprintf(listing, "Unknown DeclNode kind\n");
