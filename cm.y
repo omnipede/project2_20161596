@@ -19,10 +19,11 @@ static TreeNode* savedTree;
 int yyerror(char*);
 static int yylex(void);
 
-char* stack[100];
+#define STACK_SIZE 128
+char* stack[STACK_SIZE];
 int stack_top = -1;
 void stack_push (char* name) {
-	if (stack_top >= 99)
+	if (stack_top >= STACK_SIZE - 1)
 		return;
 	else
 		stack[++stack_top] = name;

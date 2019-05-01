@@ -294,10 +294,10 @@ void printTree (TreeNode* tree){
 		else if (tree->nodekind == DeclK) {
 			switch(tree->kind.decl) {
 				case VarK:
-					fprintf(listing, "Variable Declaration: %s\n", tree->attr.name);	
+					fprintf(listing, "Variable Declaration\n");	
 					break;
 				case FunK:
-					fprintf(listing, "Function = %s\n", tree->attr.name);
+					fprintf(listing, "Function Declaration\n");
 					break;
 				case ParamK:
 					fprintf(listing, "Parameter = %s\n", tree->attr.name); 
