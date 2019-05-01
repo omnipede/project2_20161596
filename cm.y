@@ -19,24 +19,6 @@ static TreeNode* savedTree;
 int yyerror(char*);
 static int yylex(void);
 
-#define STACK_SIZE 128
-char* stack[STACK_SIZE];
-int stack_top = -1;
-void stack_push (char* name) {
-	if (stack_top >= STACK_SIZE - 1)
-		return;
-	else
-		stack[++stack_top] = name;
-	return;
-}
-
-char* stack_pop (void) {
-	if (stack_top < 0)
-		return NULL;
-	else
-		return stack[stack_top--];
-}
-
 %}
 
 %token ELSE IF INT RETURN VOID WHILE
@@ -87,10 +69,10 @@ id: ID
 	{ 
 		savedName = copyString(tokenString); 
 		savedLineno = lineno;
-		stack_push(savedName);
 
 		$$ = newExpNode(IdK);
 		$$->attr.name = savedName;
+		$$->lineno = savedLineno;
 	} 
   ;
 num: NUM 
@@ -110,6 +92,7 @@ var_declaration: type_specifier id SEMI
 					$$ = newDeclNode(VarK);
 					$$->child[0] = $1;
 					$$->child[1] = $2;
+
 					$1->type = Array;
 					$1->len = savedNum;
 				}
@@ -142,7 +125,7 @@ params: param_list
       | VOID
 	  	{ 
 			$$ = newDeclNode(ParamK);
-			$$->attr.name = NULL;
+
 		}
 	  ;
 
@@ -349,7 +332,7 @@ factor: LPAREN expression RPAREN
 call: id LPAREN args RPAREN
 	 {
 		 $$ = newExpNode(CallK);
-		 $$->attr.name = $1->attr.name
+		 $$->attr.name = $1->attr.name;
 		 $$->child[0] = $3;
 	 }
 	;
