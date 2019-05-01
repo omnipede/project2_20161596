@@ -265,7 +265,6 @@ void printTree (TreeNode* tree){
 			switch(tree->kind.exp) {
 				case OpK:
 					fprintf(listing, "Op:");
-					//printToken(tree->attr.op, "\0");
 					printOp(tree->attr.op);
 					break;
 				case ConstK:
