@@ -156,6 +156,9 @@ param: type_specifier id
 			$$ = newDeclNode(ParamK);
 			$$->child[0] = $1;
 			$$->child[1] = $2;
+
+			$1->type = Array;
+			$1->len = 0;
 		}
 	 ;
 
