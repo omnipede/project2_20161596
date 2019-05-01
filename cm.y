@@ -45,10 +45,10 @@ char* stack_pop (void) {
 %token ID NUM
 %token ERROR_IN_COMMENT
 %token ERROR
-
+/*
 %left PLUS MINUS
 %left TIMES OVER
-
+*/
 %nonassoc RPAREN
 %nonassoc ELSE
 
