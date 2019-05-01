@@ -85,6 +85,7 @@ declaration: var_declaration
 id: ID 
 	{ 
 		savedName = copyString(tokenString); 
+		savedLineno = lineno;
 		stack_push(savedName);
 	} 
   ;
