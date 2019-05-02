@@ -1,4 +1,4 @@
-OBJECTS= cm.tab.o lex.yy.o main.o util.o
+OBJECTS= cm.tab.o lex.yy.o util.o main.o
 CC = gcc
 CFLAGS = -Wall -c
 TARGET = 20161596
@@ -6,10 +6,10 @@ TARGET = 20161596
 $(TARGET): $(OBJECTS)
 	$(CC) -o $(TARGET) $(OBJECTS)
 
-main.o: main.c
+main.o: cm.tab.c main.c
 	$(CC) $(CFLAGS) main.c
 
-util.o: util.c
+util.o: cm.tab.c util.c
 	$(CC) $(CFLAGS) util.c
 
 cm.tab.o: cm.tab.c
