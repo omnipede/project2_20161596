@@ -300,10 +300,7 @@ void printTree (TreeNode* tree){
 		else if (tree->nodekind == TypeK) {
 			switch(tree->kind.type) {
 				case VoidK:
-					if (tree->type == Array)
-						fprintf(listing, "Type: array %d\n", tree->len);
-					else
-						fprintf(listing, "Type: void\n");
+					fprintf(listing, "Type: void\n");
 					break;
 				case IntK:
 					if (tree->type == Array)
