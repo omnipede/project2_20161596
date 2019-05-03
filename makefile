@@ -6,16 +6,19 @@ TARGET = 20161596
 $(TARGET): $(OBJECTS)
 	$(CC) -o $(TARGET) $(OBJECTS)
 
-main.o: cm.tab.c main.c
+main.o: cm.tab.h main.c
 	$(CC) $(CFLAGS) main.c
 
-util.o: cm.tab.c util.c
+util.o: cm.tab.h util.c
 	$(CC) $(CFLAGS) util.c
 
 cm.tab.o: cm.tab.c
 	$(CC) $(CFLAGS) cm.tab.c
 
 cm.tab.c: cm.y
+	bison -dv cm.y
+
+cm.tab.h: cm.y
 	bison -dv cm.y
 
 lex.yy.o: lex.yy.c
