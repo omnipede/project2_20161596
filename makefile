@@ -21,7 +21,7 @@ cm.tab.c: cm.y
 cm.tab.h: cm.y
 	bison -dv cm.y
 
-lex.yy.o: lex.yy.c
+lex.yy.o: cm.tab.h lex.yy.c
 	$(CC) $(CFLAGS) lex.yy.c
 
 lex.yy.c: tiny.l
